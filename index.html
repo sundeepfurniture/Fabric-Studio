@@ -7,164 +7,146 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: showroom tablet — style rail left, sofa stage centre, fabric drawer right; stacks on narrow screens */
+/* Layout: showroom tablet — 1 style rail · stage · 2 fabric + 3 generate; stacks on narrow screens */
 :root{
   --bg:#f3f4f1; --surface:#ffffff; --ink:#1d2321; --muted:#66706c; --line:#dfe3df;
-  --accent:#1f5148; --accent-ink:#ffffff; --accent-soft:#e2ece8; --stage:#ffffff;
+  --accent:#1f5148; --accent-ink:#ffffff; --accent-soft:#e2ece8; --stage:#ffffff; --err:#a3341f;
   --display:"Young Serif", Georgia, serif;
   --body:"Figtree", system-ui, -apple-system, sans-serif;
   --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#151917; --surface:#1d2321; --ink:#eef1ee; --muted:#9aa49f; --line:#2f3733;
-  --accent:#7fc0ae; --accent-ink:#0f1a17; --accent-soft:#24342f; --stage:#ffffff; color-scheme:dark}}
+  --accent:#7fc0ae; --accent-ink:#0f1a17; --accent-soft:#24342f; --err:#f08a72; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#151917; --surface:#1d2321; --ink:#eef1ee; --muted:#9aa49f; --line:#2f3733;
-  --accent:#7fc0ae; --accent-ink:#0f1a17; --accent-soft:#24342f; --stage:#ffffff; color-scheme:dark}
+  --accent:#7fc0ae; --accent-ink:#0f1a17; --accent-soft:#24342f; --err:#f08a72; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{height:100%}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;-webkit-tap-highlight-color:transparent}
-button{font:inherit;color:inherit;cursor:pointer}
-button:focus-visible,input:focus-visible,label:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.app{display:grid;grid-template-columns:200px minmax(0,1fr) 300px;grid-template-areas:"head head head" "styles stage fabrics";grid-template-rows:auto 1fr;gap:16px;padding-block:16px;padding-inline:16px;min-height:100%}
-header{grid-area:head;display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.brand{font-family:var(--display);font-size:1.5rem;letter-spacing:.005em}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;-webkit-tap-highlight-color:transparent;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,label:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{display:grid;grid-template-columns:210px minmax(0,1fr) 300px;grid-template-areas:"head head head" "styles stage side";gap:18px;padding-block:18px;padding-inline:18px;max-width:1500px;margin:0 auto}
+header{grid-area:head;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-size:1.55rem}
 .brand small{display:block;font-family:var(--body);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:2px}
-.proto{font-family:var(--mono);font-size:.72rem;color:var(--muted);border:1px solid var(--line);padding:4px 8px;border-radius:4px}
-h2{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 10px}
-/* styles rail */
+.settings-btn{background:none;border:1px solid var(--line);padding:7px 12px;border-radius:999px;font-size:.82rem;color:var(--muted)}
+.step{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 10px;display:flex;gap:8px;align-items:center}
+.step i{font-style:normal;font-family:var(--mono);width:20px;height:20px;border-radius:50%;display:inline-grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:.7rem;letter-spacing:0}
+.step.done i{background:var(--accent);color:var(--accent-ink)}
 .styles{grid-area:styles;min-width:0}
-.style-list{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 120px);overflow:auto;padding-right:4px}
-.style-btn{display:grid;grid-template-columns:64px 1fr;align-items:center;gap:10px;padding:6px;border:1px solid transparent;border-radius:8px;background:none;text-align:left}
-.style-btn img{width:64px;height:44px;object-fit:contain;background:#fff;border-radius:6px}
+.style-list{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 130px);overflow:auto;padding-right:4px}
+.style-btn{display:grid;grid-template-columns:68px 1fr;align-items:center;gap:10px;padding:6px;border:1px solid transparent;border-radius:10px;background:none;text-align:left}
+.style-btn img{width:68px;height:48px;object-fit:contain;background:#fff;border-radius:6px}
 .style-btn b{display:block;font-weight:600;font-size:.9rem}
 .style-btn span{font-size:.75rem;color:var(--muted)}
 .style-btn[aria-pressed="true"]{background:var(--surface);border-color:var(--line)}
 .style-btn[aria-pressed="true"] b{color:var(--accent)}
-/* stage */
 .stage{grid-area:stage;min-width:0;display:flex;flex-direction:column;gap:12px}
-.canvas-wrap{position:relative;background:var(--stage);border-radius:14px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;padding:24px;aspect-ratio:4/3;max-width:100%}
-.canvas-wrap img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-touch-callout:default}
 .caption{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
-.caption h1{font-family:var(--display);font-weight:400;font-size:1.7rem;margin:0;text-wrap:balance}
+.caption h1{font-family:var(--display);font-weight:400;font-size:1.75rem;margin:0;text-wrap:balance}
 .caption p{margin:2px 0 0;color:var(--muted)}
-.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.chip{border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:999px;font-weight:500;font-size:.88rem}
+.views{display:flex;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);padding:7px 14px;border-radius:999px;font-weight:500;font-size:.85rem}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.size{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--muted)}
-.size input{accent-color:var(--accent);width:140px}
-.size output{font-family:var(--mono);font-size:.78rem;min-width:4ch}
-.hint{font-size:.8rem;color:var(--muted);margin:0}
-/* compare */
-.compare{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.cmp{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px;position:relative;min-width:0}
-.cmp img{width:100%;aspect-ratio:4/3;object-fit:contain;background:var(--stage);border-radius:6px;display:block}
-.cmp div{font-size:.78rem;margin-top:6px;line-height:1.3;overflow-wrap:anywhere}
-.cmp div b{display:block;font-size:.82rem}
-.cmp .x{position:absolute;top:4px;right:4px;border:0;background:var(--surface);border-radius:999px;width:26px;height:26px;font-size:15px;line-height:1;color:var(--muted)}
-.cmp.empty{border-style:dashed;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-size:.8rem;aspect-ratio:4/3.6;background:none}
-/* fabrics */
-.fabrics{grid-area:fabrics;min-width:0;display:flex;flex-direction:column;gap:14px}
-.scan{display:flex;flex-direction:column;gap:6px;align-items:stretch;background:var(--accent);color:var(--accent-ink);border-radius:12px;padding:14px 16px;border:0;text-align:left;cursor:pointer}
-.scan b{font-size:1.05rem;font-weight:600}
-.scan span{font-size:.8rem;opacity:.85}
-.swatches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.sw{background:none;border:0;padding:0;text-align:left;min-width:0}
-.sw canvas,.sw img{width:100%;aspect-ratio:1;border-radius:8px;display:block;border:1px solid var(--line);object-fit:cover}
-.sw[aria-pressed="true"] canvas,.sw[aria-pressed="true"] img{outline:3px solid var(--accent);outline-offset:2px}
-.sw span{display:block;font-size:.75rem;margin-top:5px;line-height:1.25;overflow-wrap:anywhere}
-.sw small{display:block;font-family:var(--mono);font-size:.66rem;color:var(--muted)}
-.tag{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-left:6px}
-/* crop dialog */
+.frame{position:relative;background:var(--stage);border-radius:16px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;aspect-ratio:3/2;max-width:100%;overflow:hidden}
+.frame img{width:100%;height:100%;object-fit:contain;display:block}
+.tag{position:absolute;left:14px;top:14px;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;padding:5px 9px;border-radius:4px;background:rgba(255,255,255,.92);color:#1d2321;border:1px solid #dfe3df}
+.tag.gen{background:#1f5148;color:#fff;border-color:#1f5148}
+.busy{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,.86);text-align:center;padding:16px;color:#1d2321}
+.busy b{font-weight:600;font-size:1.05rem}
+.busy span{color:#66706c;font-size:.9rem}
+.spin{width:38px;height:38px;border-radius:50%;border:3px solid #cfd8d4;border-top-color:#1f5148;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+.hint{font-size:.82rem;color:var(--muted);margin:0}
+.err{color:var(--err);font-size:.9rem;margin:0}
+.side{grid-area:side;min-width:0;display:flex;flex-direction:column;gap:22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.add{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1.5px dashed var(--line);border-radius:12px;padding:22px 12px;text-align:center;cursor:pointer;color:var(--muted)}
+.add b{color:var(--ink);font-weight:600}
+.fabric{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center}
+.fabric img{width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block}
+.fabric b{display:block;font-weight:600;overflow-wrap:anywhere;margin-bottom:4px}
+.link{background:none;border:0;padding:0;color:var(--accent);font-weight:600;font-size:.85rem;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.gen-btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:12px;padding:16px;font-size:1.08rem;font-weight:600;width:100%}
+.gen-btn:disabled{opacity:.45;cursor:default}
+.history{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.history button{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:5px;text-align:left;min-width:0}
+.history button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.history img{width:100%;aspect-ratio:3/2;object-fit:contain;background:#fff;border-radius:6px;display:block}
+.history span{display:block;font-size:.72rem;line-height:1.25;margin-top:4px;color:var(--muted);overflow-wrap:anywhere}
 .sheet{position:fixed;inset:0;background:rgba(10,14,12,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
 .sheet-card{background:var(--surface);border-radius:16px;padding:18px;width:min(640px,100%);display:flex;flex-direction:column;gap:12px;max-height:100%;overflow:auto}
 .sheet-card h3{font-family:var(--display);font-weight:400;font-size:1.3rem;margin:0}
 .crop{position:relative;touch-action:none;user-select:none;align-self:center;max-width:100%}
-.crop img{display:block;max-width:100%;max-height:52vh}
+.crop img{display:block;max-width:100%;max-height:50vh}
 .crop .box{position:absolute;border:2px solid #fff;box-shadow:0 0 0 9999px rgba(0,0,0,.45);border-radius:4px;cursor:move}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
-.row input[type=text]{flex:1;min-width:160px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.field{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted)}
+.field input,.field select{padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.field input[type=range]{padding:0;accent-color:var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
 .primary{background:var(--accent);color:var(--accent-ink);border:0;padding:10px 18px;border-radius:999px;font-weight:600}
 .ghost{background:none;border:1px solid var(--line);padding:10px 18px;border-radius:999px}
-html,body{margin:0}
-.proto{background:none;cursor:pointer}
-.real{background:var(--accent);color:var(--accent-ink);border:0;padding:9px 16px;border-radius:999px;font-weight:600;font-size:.88rem}
-.real:disabled{opacity:.55;cursor:default}
-.canvas-wrap .busy{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:color-mix(in srgb,var(--stage) 78%,transparent);border-radius:14px;text-align:center;padding:16px;color:#1d2321}
-.busy b{font-weight:600}
-.spin{width:34px;height:34px;border-radius:50%;border:3px solid #cfd8d4;border-top-color:#1f5148;animation:sp 1s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-.badge{position:absolute;left:12px;top:12px;background:#1f5148;color:#fff;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:4px 8px;border-radius:4px}
-.err{color:#a3341f;font-size:.85rem;margin:0}
 @media (max-width:1100px){
-  .app{grid-template-columns:minmax(0,1fr) 280px;grid-template-areas:"head head" "stage fabrics" "styles styles"}
+  .app{grid-template-columns:minmax(0,1fr) 290px;grid-template-areas:"head head" "stage side" "styles styles"}
   .style-list{flex-direction:row;max-height:none;overflow-x:auto;padding-bottom:6px}
-  .style-btn{grid-template-columns:1fr;min-width:120px;text-align:center}
-  .style-btn img{width:100%;height:64px}
+  .style-btn{grid-template-columns:1fr;min-width:128px;text-align:center}
+  .style-btn img{width:100%;height:70px}
 }
 @media (max-width:760px){
-  .app{grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "stage" "styles" "fabrics"}
-  .swatches{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .canvas-wrap{padding:10px}
+  .app{grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "styles" "stage" "side";padding-inline:16px}
 }
-@media (prefers-reduced-motion:no-preference){.canvas-wrap img{transition:opacity .15s}}
 </style>
 </head><body>
-
 <div class="app">
   <header>
     <div class="brand">Fabric Studio<small>Sundeep Furniture · Canadian custom made</small></div>
-    <button class="proto" id="pinChange" type="button">Settings</button>
+    <button class="settings-btn" id="settingsBtn" type="button">Settings</button>
   </header>
 
   <section class="styles" aria-label="Sofa styles">
-    <h2>1 · Choose a style</h2>
+    <h2 class="step done"><i>1</i>Choose a style</h2>
     <div class="style-list" id="styleList"></div>
   </section>
 
   <section class="stage">
     <div class="caption">
-      <div>
-        <h1 id="title">OW-333</h1>
-        <p id="subtitle">Sample fabric</p>
-      </div>
-      <div class="tools">
-        <div class="tools" id="views" hidden></div>
-        <button class="real" id="realBtn">Create realistic photo</button>
-        <button class="chip" id="quickBtn" aria-pressed="false" hidden>Quick preview</button>
-        <button class="chip" id="beforeBtn" aria-pressed="false">Show original</button>
-        <button class="chip" id="pinBtn">Add to compare</button>
-      </div>
+      <div><h1 id="title">OW-333</h1><p id="subtitle">Sofa</p></div>
+      <div class="views" id="views" hidden></div>
     </div>
-    <div class="canvas-wrap"><img id="view" alt="Sofa preview with the selected fabric"><span class="badge" id="aiBadge" hidden>Realistic photo</span><div class="busy" id="busy" hidden><div class="spin"></div><b>Creating a realistic photo…</b><span>This usually takes 20–60 seconds.</span></div></div>
+    <div class="frame">
+      <img id="view" alt="Selected sofa">
+      <span class="tag" id="tag">Style photo</span>
+      <div class="busy" id="busy" hidden><div class="spin"></div><b>Generating your sofa…</b><span>This usually takes 20–60 seconds.</span></div>
+    </div>
     <p class="err" id="err" hidden></p>
-    <div class="row">
-      <label class="size" for="scale">Pattern size <input type="range" id="scale" min="40" max="260" value="100"> <output id="scaleOut">100%</output></label>
-      <p class="hint">Quick preview is instant. “Create realistic photo” makes a photo-quality picture of the customer's pick.</p>
-    </div>
-    <div>
-      <h2>Compare</h2>
-      <div class="compare" id="compare"></div>
-    </div>
+    <p class="hint">Press and hold a generated photo to save it to Photos, then AirDrop, text or email it to the customer.</p>
   </section>
 
-  <section class="fabrics" aria-label="Fabrics">
-    <h2>2 · Choose a fabric</h2>
-    <label class="scan" for="fileIn">
-      <b>Scan a fabric</b>
-      <span>Take a photo of a swatch laid flat, then frame the area to use.</span>
-    </label>
-    <input type="file" id="fileIn" accept="image/*" hidden>
-    <div id="scannedWrap" hidden>
-      <h2>Scanned today</h2>
-      <div class="swatches" id="scanned"></div>
+  <aside class="side">
+    <div>
+      <h2 class="step" id="step2"><i>2</i>Add the fabric</h2>
+      <div class="card">
+        <label class="add" for="fileIn" id="addBox"><b>Add a fabric photo</b><span>Take a photo of the swatch laid flat, or pick one from Photos.</span></label>
+        <div class="fabric" id="fabricBox" hidden>
+          <img id="fabricImg" alt="Selected fabric">
+          <div><b id="fabricName">Fabric</b><label class="link" for="fileIn">Change fabric</label></div>
+        </div>
+        <input type="file" id="fileIn" accept="image/*" hidden>
+      </div>
     </div>
     <div>
-      <h2>Sample fabrics <span class="tag">for demo</span></h2>
-      <div class="swatches" id="samples"></div>
+      <h2 class="step" id="step3"><i>3</i>Generate</h2>
+      <button class="gen-btn" id="genBtn" disabled>Generate</button>
     </div>
-  </section>
+    <div id="historyWrap" hidden>
+      <h2 class="step">Generated today</h2>
+      <div class="history" id="history"></div>
+    </div>
+  </aside>
 </div>
 
 <div class="sheet" id="cropSheet" hidden>
@@ -172,30 +154,22 @@ html,body{margin:0}
     <h3>Frame the fabric</h3>
     <p class="hint">Drag the square over a flat, evenly lit part of the swatch. Include at least one full pattern repeat.</p>
     <div class="crop" id="crop"><img id="cropImg" alt="Fabric photo"><div class="box" id="cropBox"></div></div>
-    <label class="size" for="cropSize">Square size <input type="range" id="cropSize" min="20" max="100" value="60"></label>
-    <div class="row">
-      <input type="text" id="fabName" placeholder="Fabric name or code (optional)">
-      <div class="tools">
-        <button class="ghost" id="cropCancel">Cancel</button>
-        <button class="primary" id="cropOk">Use this fabric</button>
-      </div>
-    </div>
+    <label class="field" for="cropSize">Square size <input type="range" id="cropSize" min="20" max="100" value="70"></label>
+    <label class="field" for="fabName">Fabric name or code (optional) <input type="text" id="fabName" autocomplete="off"></label>
+    <div class="row"><button class="ghost" id="cropCancel">Cancel</button><button class="primary" id="cropOk">Use this fabric</button></div>
   </div>
 </div>
 
-<div class="sheet" id="pinSheet" hidden>
+<div class="sheet" id="setSheet" hidden>
   <div class="sheet-card" style="width:min(460px,100%)">
     <h3>Settings</h3>
-    <p class="hint">Paste your OpenAI API key once. It's saved only on this iPad and is used to create the realistic photos.</p>
-    <label class="size" for="pinIn" style="flex-direction:column;align-items:stretch;gap:4px">OpenAI API key
-      <input type="password" id="pinIn" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="sk-…" style="padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit"></label>
-    <label class="size" for="qualIn" style="flex-direction:column;align-items:stretch;gap:4px">Photo quality
-      <select id="qualIn" style="padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit">
-        <option value="high">High (best detail)</option><option value="medium">Medium (cheaper, faster)</option><option value="low">Low (quick test)</option></select></label>
-    <label class="size" for="modelIn" style="flex-direction:column;align-items:stretch;gap:4px">AI model
-      <select id="modelIn" style="padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit">
-        <option value="gpt-image-2">gpt-image-2 (standard)</option><option value="gpt-image-2.5-sunburst">gpt-image-2.5-sunburst (precise editing)</option></select></label>
-    <div class="row" style="justify-content:flex-end"><div class="tools"><button class="ghost" id="pinCancel">Cancel</button><button class="primary" id="pinOk">Save</button></div></div>
+    <p class="hint">Paste your OpenAI API key once. It's saved only on this iPad.</p>
+    <label class="field" for="keyIn">OpenAI API key <input type="password" id="keyIn" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="sk-…"></label>
+    <label class="field" for="qualIn">Photo quality
+      <select id="qualIn"><option value="high">High (best detail)</option><option value="medium">Medium (cheaper, faster)</option><option value="low">Low (quick test)</option></select></label>
+    <label class="field" for="modelIn">AI model
+      <select id="modelIn"><option value="gpt-image-2">gpt-image-2 (standard)</option><option value="gpt-image-2.5-sunburst">gpt-image-2.5-sunburst (precise editing)</option></select></label>
+    <div class="row"><button class="ghost" id="setCancel">Cancel</button><button class="primary" id="setOk">Save</button></div>
   </div>
 </div>
 
@@ -215,163 +189,6 @@ const STYLES=[
  {id:'three-piece',name:'3 Piece Set',kind:'Sofa, loveseat, chair'},
  {id:'ow4101',name:'OW-4101',kind:'Sectional'},
 ];
-// Sample fabrics are generated, not real stock — placeholders until the store scans its own.
-const SAMPLES=[
- {name:'Oatmeal Linen',type:'linen',c:[214,200,176]},
- {name:'Charcoal Chenille',type:'chenille',c:[70,72,74]},
- {name:'Midnight Velvet',type:'velvet',c:[34,46,84]},
- {name:'Sage Velvet',type:'velvet',c:[132,150,124]},
- {name:'Cognac Velvet',type:'velvet',c:[150,82,48]},
- {name:'Emerald Velvet',type:'velvet',c:[24,84,62]},
- {name:'Ivory Bouclé',type:'boucle',c:[236,230,216]},
- {name:'Pebble Tweed',type:'tweed',c:[150,140,128]},
- {name:'Slate Herringbone',type:'herring',c:[104,112,120]},
-];
-const $=s=>document.querySelector(s);
-let UID=0;const AI={};
-const state={style:STYLES[0],view:0,aiView:true,busy:false,fabric:null,scale:100,before:false,scans:0,pins:[]};
-const assets={};
-
-function rng(seed){return()=>{seed=(seed*16807)%2147483647;return seed/2147483647}}
-function makeSample(f,size=256){
-  const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');
-  const d=x.createImageData(size,size);const r=rng(f.name.length*977+f.c[0]);
-  const [R,G,B]=f.c;
-  for(let y=0;y<size;y++)for(let i=0;i<size;i++){
-    let v=0,n=r()-.5;
-    if(f.type==='linen'){v=n*.10+Math.sin(i*1.9)*.035+Math.sin(y*2.3)*.035+((i*7+y*3)%11<1?-.04:0)}
-    else if(f.type==='velvet'){v=n*.06+Math.sin(i*.024)*.012}
-    else if(f.type==='chenille'){v=n*.12+Math.sin(y*.9+Math.sin(i*.2))*.05}
-    else if(f.type==='boucle'){v=n*.16}
-    else if(f.type==='tweed'){v=n*.22}
-    else if(f.type==='herring'){const band=Math.floor(i/16)%2,k=band?(i+y):(i-y);v=(((k%8)+8)%8<4?.07:-.07)+n*.06}
-    let rr=R,gg=G,bb=B;
-    if(f.type==='tweed'){const t=r();if(t<.08){rr=210;gg=200;bb=180}else if(t<.13){rr=60;gg=58;bb=55}}
-    const o=(y*size+i)*4;
-    d.data[o]=rr*(1+v);d.data[o+1]=gg*(1+v);d.data[o+2]=bb*(1+v);d.data[o+3]=255;
-  }
-  x.putImageData(d,0,0);
-  if(f.type==='boucle'){for(let k=0;k<900;k++){x.fillStyle=`rgba(${r()<.5?'255,255,250':'180,170,150'},.35)`;x.beginPath();x.arc(r()*size,r()*size,1+r()*2.2,0,7);x.fill()}}
-  return c;
-}
-
-function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src})}
-function viewId(){const v=state.style.views;return v?v[state.view].id:state.style.id}
-async function getStyle(id){
-  if(assets[id])return assets[id];
-  const [img,w,sh]=await Promise.all([loadImg(`sofas/${id}.webp`),loadImg(`sofas/${id}-w.png`),loadImg(`sofas/${id}-s.png`)]);
-  const W=img.width,H=img.height,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
-  x.drawImage(img,0,0);const base=x.getImageData(0,0,W,H);
-  x.clearRect(0,0,W,H);x.drawImage(w,0,0,W,H);const wd=x.getImageData(0,0,W,H).data;
-  x.clearRect(0,0,W,H);x.drawImage(sh,0,0,W,H);const sd=x.getImageData(0,0,W,H).data;
-  // shading map holds only the sofa's shape (folds, seams, shadows); the photo's own fabric grain is smoothed out
-  const weight=new Float32Array(W*H),lum=new Float32Array(W*H);
-  for(let p=0;p<W*H;p++){const o=p*4;lum[p]=sd[o]/255*2;weight[p]=wd[o]/255}
-  return assets[id]={W,H,base,weight,lum,ref:1};
-}
-
-function fabricTile(fab,px){
-  const c=document.createElement('canvas');const n=Math.max(8,Math.round(px));c.width=c.height=n;
-  const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(fab.canvas,0,0,n,n);
-  return {n,d:x.getImageData(0,0,n,n).data};
-}
-
-let renderToken=0;
-async function render(){
-  const tok=++renderToken;drawViews();
-  $('#title').textContent=state.style.name;
-  if(state.before||!state.fabric){$('#aiBadge').hidden=true;$('#quickBtn').hidden=true;updateReal();const v=$('#view');v.src=`sofas/${viewId()}-orig.jpg`;state.lastUrl=v.src;$('#subtitle').textContent='Original photo';return}
-  const key=aiKey(),ai=AI[key];
-  $('#quickBtn').hidden=!ai;$('#quickBtn').setAttribute('aria-pressed',!state.aiView);
-  if(ai&&state.aiView){const v=$('#view');v.src=ai;state.lastUrl=ai;$('#aiBadge').hidden=false;$('#subtitle').textContent=state.fabric.name+' · realistic photo';updateReal();return}
-  $('#aiBadge').hidden=true;updateReal();
-  const a=await getStyle(viewId());if(tok!==renderToken)return;
-  const {W,H,base,weight,lum,ref}=a;
-  const out=new ImageData(W,H);const od=out.data,bd=base.data;
-  {
-    // a 15 cm swatch ≈ 7% of a typical sofa's width in the photo
-    const t=fabricTile(state.fabric,W*.07*state.scale/100),n=t.n,fd=t.d,n2=n*2;
-    for(let y=0;y<H;y++){let ty=y%n2;if(ty>=n)ty=n2-1-ty;
-      for(let x=0;x<W;x++){const p=y*W+x,o=p*4,w=weight[p];
-        if(w<=0.004){od[o]=bd[o];od[o+1]=bd[o+1];od[o+2]=bd[o+2];od[o+3]=bd[o+3];continue}
-        let tx=x%n2;if(tx>=n)tx=n2-1-tx;const fo=(ty*n+tx)*4;
-        const s=lum[p]/ref;
-        for(let k=0;k<3;k++){const F=fd[fo+k]/255;let v=s<=1?F*s:F+(1-F)*(s-1)*.55;
-          v=Math.max(0,Math.min(1,v))*255;od[o+k]=bd[o+k]*(1-w)+v*w}
-        od[o+3]=bd[o+3];
-      }}
-  }
-  const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').putImageData(out,0,0);
-  const v=$('#view');v.src=c.toDataURL('image/png');state.lastUrl=v.src;
-  $('#subtitle').textContent=state.fabric.name;
-}
-function drawViews(){
-  const box=$('#views');box.innerHTML='';const vs=state.style.views;box.hidden=!vs;if(!vs)return;
-  vs.forEach((v,i)=>{const b=document.createElement('button');b.className='chip';b.textContent=v.label;b.setAttribute('aria-pressed',i===state.view);
-    b.onclick=()=>{state.view=i;render()};box.appendChild(b)});
-}
-
-function buildStyles(){
-  const list=$('#styleList');
-  STYLES.forEach(s=>{const b=document.createElement('button');b.className='style-btn';b.setAttribute('aria-pressed',s===state.style);
-    b.innerHTML=`<img src="sofas/${s.views?s.views[0].id:s.id}-orig.jpg" alt=""><div><b>${s.name}</b><span>${s.kind}</span></div>`;
-    b.onclick=()=>{state.style=s;state.view=0;list.querySelectorAll('.style-btn').forEach(e=>e.setAttribute('aria-pressed',e===b));render()};
-    list.appendChild(b)});
-}
-function addSwatch(fab,container,select){
-  const b=document.createElement('button');b.className='sw';b.setAttribute('aria-pressed','false');
-  const th=document.createElement('canvas');th.width=th.height=120;th.getContext('2d').drawImage(fab.canvas,0,0,120,120);
-  b.appendChild(th);const l=document.createElement('span');l.textContent=fab.name;b.appendChild(l);
-  if(fab.code){const sm=document.createElement('small');sm.textContent=fab.code;b.appendChild(sm)}
-  b.onclick=()=>pick(fab,b);fab.btn=b;container.prepend?container.appendChild(b):0;
-  if(select)pick(fab,b);
-}
-function pick(fab,b){state.fabric=fab;state.before=false;$('#beforeBtn').setAttribute('aria-pressed','false');
-  document.querySelectorAll('.sw').forEach(e=>e.setAttribute('aria-pressed',e===b));render()}
-
-// compare tray
-function drawCompare(){
-  const box=$('#compare');box.innerHTML='';
-  for(let i=0;i<3;i++){const p=state.pins[i];
-    if(!p){const e=document.createElement('div');e.className='cmp empty';e.textContent=i===0?'Tap “Add to compare” to keep a look here':'Empty';box.appendChild(e);continue}
-    const e=document.createElement('div');e.className='cmp';
-    e.innerHTML=`<img alt=""><div><b></b><span></span></div><button class="x" aria-label="Remove">×</button>`;
-    e.querySelector('img').src=p.url;e.querySelector('b').textContent=p.style;e.querySelector('span').textContent=p.fabric;
-    e.querySelector('.x').onclick=()=>{state.pins.splice(i,1);drawCompare()};box.appendChild(e)}
-}
-$('#pinBtn').onclick=()=>{if(!state.lastUrl)return;if(state.pins.length>=3)state.pins.shift();
-  state.pins.push({url:state.lastUrl,style:state.style.name,fabric:state.before||!state.fabric?'Original':state.fabric.name});drawCompare()};
-$('#beforeBtn').onclick=e=>{state.before=!state.before;e.currentTarget.setAttribute('aria-pressed',state.before);render()};
-$('#scale').oninput=e=>{state.scale=+e.target.value;$('#scaleOut').textContent=state.scale+'%';clearTimeout(state.st);state.st=setTimeout(render,40)};
-
-// scanning
-const cropBox=$('#cropBox'),cropImg=$('#cropImg');let cb={x:0,y:0,s:0};
-function placeBox(){const W=cropImg.clientWidth,H=cropImg.clientHeight,s=Math.min(W,H)*$('#cropSize').value/100;
-  cb.s=s;cb.x=Math.max(0,Math.min(W-s,cb.x));cb.y=Math.max(0,Math.min(H-s,cb.y));
-  Object.assign(cropBox.style,{left:cb.x+'px',top:cb.y+'px',width:s+'px',height:s+'px'})}
-$('#fileIn').onchange=e=>{const f=e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);
-  cropImg.onload=()=>{$('#cropSheet').hidden=false;requestAnimationFrame(()=>{const W=cropImg.clientWidth,H=cropImg.clientHeight,s=Math.min(W,H)*.6;cb={x:(W-s)/2,y:(H-s)/2,s};placeBox()})};
-  cropImg.src=url;e.target.value=''};
-$('#cropSize').oninput=placeBox;
-let drag=null;
-cropBox.addEventListener('pointerdown',e=>{drag={sx:e.clientX,sy:e.clientY,x:cb.x,y:cb.y};cropBox.setPointerCapture(e.pointerId)});
-cropBox.addEventListener('pointermove',e=>{if(!drag)return;cb.x=drag.x+e.clientX-drag.sx;cb.y=drag.y+e.clientY-drag.sy;placeBox()});
-cropBox.addEventListener('pointerup',()=>drag=null);
-$('#cropCancel').onclick=()=>{$('#cropSheet').hidden=true};
-$('#cropOk').onclick=()=>{
-  const k=cropImg.naturalWidth/cropImg.clientWidth,c=document.createElement('canvas');c.width=c.height=256;
-  const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(cropImg,cb.x*k,cb.y*k,cb.s*k,cb.s*k,0,0,256,256);
-  const hs=Math.min(1024,Math.round(cb.s*k)),hi=document.createElement('canvas');hi.width=hi.height=hs;
-  const hx=hi.getContext('2d');hx.imageSmoothingQuality='high';hx.drawImage(cropImg,cb.x*k,cb.y*k,cb.s*k,cb.s*k,0,0,hs,hs);
-  state.scans++;const name=$('#fabName').value.trim()||`Scanned fabric ${state.scans}`;$('#fabName').value='';
-  const fab={uid:++UID,hi,name,canvas:c,code:'Scanned '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})};
-  $('#scannedWrap').hidden=false;const box=$('#scanned');addSwatch(fab,box,false);box.prepend(fab.btn);pick(fab,fab.btn);
-  $('#cropSheet').hidden=true};
-
-function aiKey(){return state.fabric?viewId()+'|'+state.fabric.uid:''}
-function updateReal(){const b=$('#realBtn');const has=!!AI[aiKey()];b.disabled=state.busy||!state.fabric;
-  b.textContent=has?'Create again':'Create realistic photo'}
-$('#quickBtn').onclick=()=>{state.aiView=!state.aiView;render()};
 const PROMPT=(styleName)=>`Image 1 is a product photo of a custom-made sofa (style: ${styleName}).
 Image 2 is a photo of an upholstery fabric swatch, about 15 cm across.
 
@@ -393,15 +210,75 @@ Clean product shot:
 - soft, even studio lighting
 
 Do not add text, logos, people, plants or other furniture.`;
-function store(k,v){try{if(v===undefined)return localStorage.getItem(k)||'';localStorage.setItem(k,v)}catch(e){window['_'+k]=v;return window['_'+k]||''}}
-const getPin=()=>store('openaiKey'), setPin=(p)=>store('openaiKey',p);
-let afterPin=null;
-function openPin(then){afterPin=then||null;$('#pinIn').value=getPin();$('#qualIn').value=store('quality')||'high';$('#modelIn').value=store('model')||'gpt-image-2';$('#pinSheet').hidden=false}
-$('#pinChange').onclick=()=>openPin();
-$('#pinCancel').onclick=()=>{$('#pinSheet').hidden=true;afterPin=null};
-$('#pinOk').onclick=()=>{setPin($('#pinIn').value.trim());store('quality',$('#qualIn').value);store('model',$('#modelIn').value);$('#pinSheet').hidden=true;const f=afterPin;afterPin=null;if(f&&getPin())f()};
-function canvasBlob(c,q){return new Promise(r=>c.toBlob(r,'image/jpeg',q))}
+
+const $=s=>document.querySelector(s);
+const state={style:STYLES[0],view:0,fabric:null,busy:false,showing:null,history:[],scans:0};
+const viewId=()=>state.style.views?state.style.views[state.view].id:state.style.id;
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k)||'';localStorage.setItem(k,v)}catch(e){if(v===undefined)return window['_'+k]||'';window['_'+k]=v}}
+
+function buildStyles(){
+  const list=$('#styleList');
+  STYLES.forEach(s=>{const b=document.createElement('button');b.className='style-btn';b.setAttribute('aria-pressed',s===state.style);
+    const img=document.createElement('img');img.src=`ref/${s.views?s.views[0].id:s.id}.jpg`;img.alt='';
+    const d=document.createElement('div');const t=document.createElement('b');t.textContent=s.name;const k=document.createElement('span');k.textContent=s.kind;d.append(t,k);
+    b.append(img,d);
+    b.onclick=()=>{state.style=s;state.view=0;state.showing=null;list.querySelectorAll('.style-btn').forEach(e=>e.setAttribute('aria-pressed',e===b));showErr('');render()};
+    list.appendChild(b)});
+}
+function drawViews(){
+  const box=$('#views');box.innerHTML='';const vs=state.style.views;box.hidden=!vs;if(!vs)return;
+  vs.forEach((v,i)=>{const b=document.createElement('button');b.className='chip';b.textContent=v.label;b.setAttribute('aria-pressed',i===state.view);
+    b.onclick=()=>{state.view=i;state.showing=null;render()};box.appendChild(b)});
+}
+function render(){
+  drawViews();
+  const h=state.showing;
+  $('#title').textContent=h?h.style:state.style.name;
+  if(h){$('#view').src=h.url;$('#tag').textContent='Generated';$('#tag').className='tag gen';$('#subtitle').textContent=h.fabric}
+  else{$('#view').src=`ref/${viewId()}.jpg`;$('#tag').textContent='Style photo';$('#tag').className='tag';$('#subtitle').textContent=state.style.kind}
+  $('#genBtn').disabled=state.busy||!state.fabric;
+  $('#genBtn').textContent=state.busy?'Generating…':'Generate';
+  $('#step2').classList.toggle('done',!!state.fabric);
+  $('#step3').classList.toggle('done',state.history.length>0);
+  drawHistory();
+}
+function drawHistory(){
+  const box=$('#history');box.innerHTML='';$('#historyWrap').hidden=!state.history.length;
+  state.history.forEach(h=>{const b=document.createElement('button');b.setAttribute('aria-pressed',state.showing===h);
+    const i=document.createElement('img');i.src=h.url;i.alt='';const s=document.createElement('span');s.textContent=h.style+' · '+h.fabric;b.append(i,s);
+    b.onclick=()=>{state.showing=h;render()};box.appendChild(b)});
+}
 function showErr(m){const e=$('#err');e.textContent=m||'';e.hidden=!m}
+
+const cropBox=$('#cropBox'),cropImg=$('#cropImg');let cb={x:0,y:0,s:0};
+function placeBox(){const W=cropImg.clientWidth,H=cropImg.clientHeight,s=Math.min(W,H)*$('#cropSize').value/100;
+  cb.s=s;cb.x=Math.max(0,Math.min(W-s,cb.x));cb.y=Math.max(0,Math.min(H-s,cb.y));
+  Object.assign(cropBox.style,{left:cb.x+'px',top:cb.y+'px',width:s+'px',height:s+'px'})}
+$('#fileIn').onchange=e=>{const f=e.target.files[0];if(!f)return;
+  cropImg.onload=()=>{$('#cropSheet').hidden=false;requestAnimationFrame(()=>{const W=cropImg.clientWidth,H=cropImg.clientHeight,s=Math.min(W,H)*.7;cb={x:(W-s)/2,y:(H-s)/2,s};placeBox()})};
+  cropImg.src=URL.createObjectURL(f);e.target.value=''};
+$('#cropSize').oninput=placeBox;
+let drag=null;
+cropBox.addEventListener('pointerdown',e=>{drag={sx:e.clientX,sy:e.clientY,x:cb.x,y:cb.y};cropBox.setPointerCapture(e.pointerId)});
+cropBox.addEventListener('pointermove',e=>{if(!drag)return;cb.x=drag.x+e.clientX-drag.sx;cb.y=drag.y+e.clientY-drag.sy;placeBox()});
+cropBox.addEventListener('pointerup',()=>drag=null);
+$('#cropCancel').onclick=()=>{$('#cropSheet').hidden=true};
+$('#cropOk').onclick=()=>{
+  const k=cropImg.naturalWidth/cropImg.clientWidth,size=Math.min(1024,Math.round(cb.s*k));
+  const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');x.imageSmoothingQuality='high';
+  x.drawImage(cropImg,cb.x*k,cb.y*k,cb.s*k,cb.s*k,0,0,size,size);
+  state.scans++;const name=$('#fabName').value.trim()||`Fabric ${state.scans}`;$('#fabName').value='';
+  state.fabric={name,canvas:c};$('#fabricImg').src=c.toDataURL('image/jpeg',.85);$('#fabricName').textContent=name;
+  $('#addBox').hidden=true;$('#fabricBox').hidden=false;$('#cropSheet').hidden=true;showErr('');render()};
+
+let afterSave=null;
+function openSettings(then){afterSave=then||null;$('#keyIn').value=store('openaiKey');$('#qualIn').value=store('quality')||'high';$('#modelIn').value=store('model')||'gpt-image-2';$('#setSheet').hidden=false}
+$('#settingsBtn').onclick=()=>openSettings();
+$('#setCancel').onclick=()=>{$('#setSheet').hidden=true;afterSave=null};
+$('#setOk').onclick=()=>{store('openaiKey',$('#keyIn').value.trim());store('quality',$('#qualIn').value);store('model',$('#modelIn').value);
+  $('#setSheet').hidden=true;const f=afterSave;afterSave=null;if(f&&store('openaiKey'))f()};
+
+function canvasBlob(c,q){return new Promise(r=>c.toBlob(r,'image/jpeg',q))}
 async function callOpenAI(sofa,fabric,styleName,withFidelity){
   const f=new FormData();
   f.append('model',store('model')||'gpt-image-2');f.append('prompt',PROMPT(styleName));
@@ -409,7 +286,7 @@ async function callOpenAI(sofa,fabric,styleName,withFidelity){
   f.append('size','1536x1024');f.append('quality',store('quality')||'high');
   f.append('output_format','jpeg');f.append('output_compression','90');f.append('n','1');
   if(withFidelity)f.append('input_fidelity','high');
-  const r=await fetch('https://api.openai.com/v1/images/edits',{method:'POST',headers:{Authorization:'Bearer '+getPin()},body:f});
+  const r=await fetch('https://api.openai.com/v1/images/edits',{method:'POST',headers:{Authorization:'Bearer '+store('openaiKey')},body:f});
   const j=await r.json().catch(()=>({}));return {r,j};
 }
 function friendly(status,msg){
@@ -418,29 +295,26 @@ function friendly(status,msg){
   if(/verif/i.test(msg))return 'OpenAI needs your organization verified before it will create images. Do this under Settings → Organization on platform.openai.com.';
   return msg||('OpenAI returned error '+status+'. Try again.');
 }
-async function makeReal(){
+async function generate(){
   if(!state.fabric||state.busy)return;
-  if(!getPin()){openPin(makeReal);return}
-  const fab=state.fabric,style=state.style,vid=viewId(),key=aiKey();
-  state.busy=true;updateReal();showErr('');$('#busy').hidden=false;
+  if(!store('openaiKey')){openSettings(generate);return}
+  const style=state.style,vid=viewId(),fab=state.fabric;
+  state.busy=true;showErr('');$('#busy').hidden=false;render();
   try{
     const sofa=await (await fetch(`ref/${vid}.jpg`)).blob();
-    const src=fab.hi||fab.canvas;const fc=document.createElement('canvas');fc.width=fc.height=Math.min(1024,src.width);
-    fc.getContext('2d').drawImage(src,0,0,fc.width,fc.height);
-    const fabric=await canvasBlob(fc,0.92);
+    const fabric=await canvasBlob(fab.canvas,.92);
     let {r,j}=await callOpenAI(sofa,fabric,style.name,true);
     if(!r.ok&&r.status===400&&/input_fidelity/i.test(JSON.stringify(j)))({r,j}=await callOpenAI(sofa,fabric,style.name,false));
     if(!r.ok)throw new Error(friendly(r.status,j?.error?.message||''));
     const b64=j?.data?.[0]?.b64_json;if(!b64)throw new Error("OpenAI didn't send an image back. Try again.");
-    AI[key]='data:image/jpeg;base64,'+b64;state.aiView=true;
+    const h={url:'data:image/jpeg;base64,'+b64,style:style.name,fabric:fab.name};
+    state.history.unshift(h);if(state.history.length>12)state.history.pop();
+    if(state.style===style&&viewId()===vid)state.showing=h;
   }catch(e){showErr(e instanceof TypeError?"Couldn't reach OpenAI. Check the iPad's Wi-Fi and try again.":(e.message||String(e)))}
-  finally{state.busy=false;$('#busy').hidden=true;updateReal();if(aiKey()===key)render()}
+  finally{state.busy=false;$('#busy').hidden=true;render()}
 }
-$('#realBtn').onclick=makeReal;
+$('#genBtn').onclick=generate;
 
-buildStyles();
-SAMPLES.forEach((f,i)=>{f.uid=++UID;f.canvas=makeSample(f);f.hi=makeSample(f,768);addSwatch(f,$('#samples'),false)});
-drawCompare();
-const first=SAMPLES[3];pick(first,first.btn);
+buildStyles();render();
 </script>
 </body></html>
