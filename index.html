@@ -62,6 +62,23 @@ header{grid-area:head;display:flex;align-items:center;justify-content:space-betw
 @keyframes sp{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
 .hint{font-size:.82rem;color:var(--muted);margin:0}
+.opt{display:flex;flex-direction:column;gap:8px}
+.opt+.opt{border-top:1px solid var(--line);padding-top:12px}
+.opt-label{font-size:.8rem;font-weight:600;color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips .chip{padding:6px 12px;font-size:.82rem}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.grid2 .field{font-size:.75rem}
+.grid2 .field input,.grid2 .field select{padding:8px 10px;min-width:0;width:100%}
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.plan-head{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.plan-head b{color:var(--ink);font-weight:600}
+.plan svg{width:100%;height:auto;max-height:260px;display:block}
+.plan .body{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.plan .arm{fill:var(--accent)}
+.plan .dim{stroke:var(--muted);stroke-width:1}
+.plan text{fill:var(--ink);font-family:var(--body);font-size:13px}
+.plan text.small{fill:var(--muted);font-size:11px}
 .err{color:var(--err);font-size:.9rem;margin:0}
 .side{grid-area:side;min-width:0;display:flex;flex-direction:column;gap:22px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
@@ -122,6 +139,10 @@ header{grid-area:head;display:flex;align-items:center;justify-content:space-betw
       <span class="tag" id="tag">Style photo</span>
       <div class="busy" id="busy" hidden><div class="spin"></div><b>Generating your sofa…</b><span>This usually takes 20–60 seconds.</span></div>
     </div>
+    <div class="plan" id="planBox" hidden>
+      <div class="plan-head"><b id="planTitle">Layout</b><span>Seen from above · front of the sofa at the bottom</span></div>
+      <svg id="planSvg" role="img" aria-label="Top-down layout with measurements"></svg>
+    </div>
     <p class="err" id="err" hidden></p>
     <p class="hint">Press and hold a generated photo to save it to Photos, then AirDrop, text or email it to the customer.</p>
   </section>
@@ -138,8 +159,17 @@ header{grid-area:head;display:flex;align-items:center;justify-content:space-betw
         <input type="file" id="fileIn" accept="image/*" hidden>
       </div>
     </div>
+    <div id="optWrap">
+      <h2 class="step done"><i>3</i>Options</h2>
+      <div class="card">
+        <div class="opt" id="backOpt"><span class="opt-label">Back style</span><div class="chips" id="backChips"></div></div>
+        <div class="opt" id="sectOpt"><span class="opt-label">Sectional layout</span><div class="chips" id="shapeChips"></div><div id="sectFields"></div></div>
+        <div class="opt"><label class="field" for="notesIn" style="color:var(--ink);font-weight:600;font-size:.8rem">Notes (optional)
+          <input type="text" id="notesIn" autocomplete="off" placeholder="e.g. black legs, no nailheads" style="font-weight:400"></label></div>
+      </div>
+    </div>
     <div>
-      <h2 class="step" id="step3"><i>3</i>Generate</h2>
+      <h2 class="step" id="step3"><i>4</i>Generate</h2>
       <button class="gen-btn" id="genBtn" disabled>Generate</button>
     </div>
     <div id="historyWrap" hidden>
@@ -176,12 +206,12 @@ header{grid-area:head;display:flex;align-items:center;justify-content:space-betw
 <script>
 const STYLES=[
  {id:'ow333',name:'OW-333',kind:'Sofa'},
- {id:'ow333-sectional',name:'OW-333 Sectional',kind:'Sectional'},
- {id:'deep40',name:'40″ Deep Sectional',kind:'Sectional'},
- {id:'vista',name:'Vista',kind:'Sectional with chaise'},
- {id:'tufted-sectional',name:'R104',kind:'Sectional with chaise'},
- {id:'mario',name:'Mario',kind:'U-shaped sectional'},
- {id:'tub',name:'Tub Sectional',kind:'Sectional with tub chaise',views:[{id:'tub',label:'Angle'},{id:'tub-front',label:'Front'}]},
+ {id:'ow333-sectional',sectional:true,name:'OW-333 Sectional',kind:'Sectional'},
+ {id:'deep40',sectional:true,name:'40″ Deep Sectional',kind:'Sectional'},
+ {id:'vista',sectional:true,name:'Vista',kind:'Sectional with chaise'},
+ {id:'tufted-sectional',sectional:true,name:'R104',kind:'Sectional with chaise'},
+ {id:'mario',sectional:true,name:'Mario',kind:'U-shaped sectional'},
+ {id:'tub',sectional:true,name:'Tub Sectional',kind:'Sectional with tub chaise',views:[{id:'tub',label:'Angle'},{id:'tub-front',label:'Front'}]},
  {id:'wave',name:'Wave',kind:'Curved sofa'},
  {id:'rio',name:'Rio',kind:'Chesterfield sofa'},
  {id:'r2929',name:'R2929',kind:'Camelback sofa'},
@@ -190,20 +220,34 @@ const STYLES=[
  {id:'loveseat',name:'Tufted Loveseat',kind:'Loveseat'},
  {id:'channel-set',name:'R1015',kind:'Channel-back loveseat'},
  {id:'chaise',name:'Chaise',kind:'Chaise lounge'},
- {id:'darcy',name:'Darcy',kind:'Channel-tufted sofa'},
+ {id:'darcy',noBack:true,name:'Darcy',kind:'Channel-tufted sofa'},
  {id:'dt4000',name:'DT-4000',kind:'Tufted sofa'},
- {id:'ow4101',name:'OW-4101',kind:'Sectional'},
+ {id:'ow4101',sectional:true,name:'OW-4101',kind:'Sectional'},
 ];
-const PROMPT=(styleName)=>`Image 1 is a product photo of a custom-made sofa (style: ${styleName}).
+const BACKS=[{v:'shown',t:'As shown'},{v:'button',t:'Button tufted'},{v:'channel',t:'Channel back'}];
+const SHAPES=[{v:'shown',t:'As shown'},{v:'L',t:'L-shape'},{v:'U',t:'U-shape'},{v:'SC',t:'Sofa + chaise'}];
+function PROMPT(styleName,o){
+  const L=o&&o.layout, back=o?o.back:'shown', notes=o?o.notes:'';
+  const keep=[];
+  if(L){keep.push('- the same design: arm style, back cushion and seat cushion style');
+        keep.push('- a similar camera angle and lighting, showing the whole sectional');}
+  else keep.push('- sofa shape, proportions, number of seats and cushions, and camera angle');
+  if(back==='shown')keep.push('- seams, piping, tufting, buttons, channel stitching and cushion folds');
+  else keep.push('- seams, piping and cushion folds');
+  keep.push('- legs, nailheads and any metal trim (keep their original colour and material)');
+  const ch=[];
+  if(back==='button')ch.push('- Back: change the back to classic diamond button tufting with fabric-covered buttons in the same fabric (no crystals or rhinestones).');
+  if(back==='channel')ch.push('- Back: change the back to straight vertical channel tufting (smooth vertical channels, no buttons and no diamond tufting).');
+  if(L)ch.push('- Layout: reconfigure it as '+describeLayout(L)+' Left and right are as seen when facing the sofa from the front. Match these measurements as closely as possible in the proportions, with the number of seat cushions that suits each length.');
+  if(notes)ch.push('- Other customer requests (these take priority over anything above): '+notes);
+  return `Image 1 is a product photo of a custom-made sofa (style: ${styleName}).
 Image 2 is a photo of an upholstery fabric swatch, about 15 cm across.
 
-Create a photorealistic product photo of the exact sofa from image 1, fully reupholstered in the fabric from image 2.
+Create a photorealistic product photo of the sofa from image 1, fully reupholstered in the fabric from image 2.
 
-Keep exactly the same:
-- sofa shape, proportions, number of seats and cushions, and camera angle
-- seams, piping, tufting, buttons, channel stitching and cushion folds
-- legs, nailheads and any metal trim (keep their original colour and material)
-
+Keep the same:
+${keep.join('\n')}
+${ch.length?'\nMake these changes:\n'+ch.join('\n')+'\n':''}
 Fabric:
 - match the colour, texture, weave and any pattern of image 2 as closely as possible
 - scale the weave or pattern realistically for a 15 cm swatch on a full-size sofa
@@ -215,9 +259,94 @@ Clean product shot:
 - soft, even studio lighting
 
 Do not add text, logos, people, plants or other furniture.`;
+}
+// measurements are kept in inches
+function fmtP(i){i=Math.round(i);const f=Math.floor(i/12),r=i%12;return f&&r?`${f} ft ${r} in (${i} inches)`:f?`${f} ft (${i} inches)`:`${i} inches`}
+function fmt(i){i=Math.round(i);const f=Math.floor(i/12),r=i%12;return (f?f+'′':'')+(r||!f?(f?' ':'')+r+'″':'')}
+function endTxt(e){return e==='chaise'?'an open chaise end (no arm)':'an arm'}
+function describeLayout(L){
+  if(L.shape==='SC'){const sd=L.left?'left':'right',c=L.left||L.right;return `a sofa with a chaise on the ${sd}: the sofa is about ${fmtP(L.back)} wide and the chaise extends about ${fmtP(c.len)} from the back, with an arm at the other end of the sofa.`}
+  if(L.shape==='L'){const sd=L.left?'left':'right',c=L.left||L.right;return `an L-shaped sectional: the back section is about ${fmtP(L.back)} long, and a ${sd} return about ${fmtP(c.len)} long ends in ${endTxt(c.end)}; the other end of the back section has an arm.`}
+  return `a U-shaped sectional: the back section is about ${fmtP(L.back)} long; the left side is about ${fmtP(L.left.len)} long and ends in ${endTxt(L.left.end)}; the right side is about ${fmtP(L.right.len)} long and ends in ${endTxt(L.right.end)}.`;
+}
+function layoutSummary(L){
+  if(!L)return '';
+  if(L.shape==='SC')return `Sofa ${fmt(L.back)} + chaise ${fmt((L.left||L.right).len)} (${L.left?'left':'right'})`;
+  if(L.shape==='L'){const c=L.left||L.right;return `L-shape ${fmt(L.back)} × ${fmt(c.len)}${c.end==='chaise'?' chaise':''} (${L.left?'left':'right'})`}
+  return `U-shape ${fmt(L.left.len)} × ${fmt(L.back)} × ${fmt(L.right.len)}`;
+}
 
 const $=s=>document.querySelector(s);
 const state={style:STYLES[0],view:0,fabric:null,busy:false,showing:null,history:[],scans:0};
+const opt={back:'shown',shape:'shown',unit:'in',notes:'',
+  L:{back:110,side:85,sideOn:'left',end:'arm'},
+  U:{back:130,left:85,right:85,leftEnd:'arm',rightEnd:'arm'},
+  SC:{back:96,chaise:65,sideOn:'left'}};
+function chipGroup(box,items,val,on){box.innerHTML='';items.forEach(it=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=it.t;b.setAttribute('aria-pressed',it.v===val);b.onclick=()=>on(it.v);box.appendChild(b)})}
+const toUnit=i=>opt.unit==='ft'?+(i/12).toFixed(2):Math.round(i);
+const fromUnit=v=>{v=parseFloat(v);if(!(v>0))return null;return opt.unit==='ft'?v*12:v};
+function numField(label,obj,key){const l=document.createElement('label');l.className='field';const id='f_'+key+'_'+opt.shape;l.htmlFor=id;l.textContent=label+' ('+(opt.unit==='ft'?'ft':'in')+')';
+  const i=document.createElement('input');i.type='number';i.inputMode='decimal';i.id=id;i.min='1';i.step='any';i.value=toUnit(obj[key]);
+  i.oninput=()=>{const v=fromUnit(i.value);if(v){obj[key]=v;drawPlan()}};l.appendChild(i);return l}
+function selField(label,obj,key,items){const l=document.createElement('label');l.className='field';const id='s_'+key+'_'+opt.shape;l.htmlFor=id;l.textContent=label;
+  const s=document.createElement('select');s.id=id;items.forEach(([v,t])=>{const o=document.createElement('option');o.value=v;o.textContent=t;s.appendChild(o)});s.value=obj[key];
+  s.onchange=()=>{obj[key]=s.value;drawPlan()};l.appendChild(s);return l}
+const SIDES=[['left','Left'],['right','Right']],ENDS=[['arm','Arm'],['chaise','Chaise']];
+function drawOptions(){
+  const st=state.style;
+  $('#backOpt').hidden=!!st.noBack;$('#sectOpt').hidden=!st.sectional;
+  chipGroup($('#backChips'),BACKS,opt.back,v=>{opt.back=v;drawOptions()});
+  chipGroup($('#shapeChips'),SHAPES,opt.shape,v=>{opt.shape=v;drawOptions();drawPlan()});
+  const f=$('#sectFields');f.innerHTML='';
+  if(st.sectional&&opt.shape!=='shown'){
+    const g=document.createElement('div');g.className='grid2';
+    if(opt.shape==='L'){const o=opt.L;g.append(numField('Back length',o,'back'),numField('Side length',o,'side'),selField('Side on',o,'sideOn',SIDES),selField('Side ends with',o,'end',ENDS))}
+    if(opt.shape==='U'){const o=opt.U;g.append(numField('Back length',o,'back'),numField('Left side',o,'left'),numField('Right side',o,'right'),selField('Left end',o,'leftEnd',ENDS),selField('Right end',o,'rightEnd',ENDS))}
+    if(opt.shape==='SC'){const o=opt.SC;g.append(numField('Sofa length',o,'back'),numField('Chaise length',o,'chaise'),selField('Chaise on',o,'sideOn',SIDES))}
+    const u=document.createElement('label');u.className='field';u.htmlFor='unitSel';u.textContent='Units';
+    const us=document.createElement('select');us.id='unitSel';[['in','Inches'],['ft','Feet']].forEach(([v,t])=>{const o=document.createElement('option');o.value=v;o.textContent=t;us.appendChild(o)});us.value=opt.unit;
+    us.onchange=()=>{opt.unit=us.value;drawOptions()};u.appendChild(us);g.appendChild(u);f.appendChild(g);
+  }
+}
+function currentLayout(){
+  const st=state.style;if(!st.sectional||opt.shape==='shown')return null;
+  if(opt.shape==='L'){const o=opt.L,c={len:o.side,end:o.end};return {shape:'L',back:o.back,left:o.sideOn==='left'?c:null,right:o.sideOn==='right'?c:null}}
+  if(opt.shape==='SC'){const o=opt.SC,c={len:o.chaise,end:'chaise'};return {shape:'SC',back:o.back,left:o.sideOn==='left'?c:null,right:o.sideOn==='right'?c:null}}
+  const o=opt.U;return {shape:'U',back:o.back,left:{len:o.left,end:o.leftEnd},right:{len:o.right,end:o.rightEnd}};
+}
+function currentOpts(){return {back:state.style.noBack?'shown':opt.back,layout:currentLayout(),notes:$('#notesIn').value.trim()}}
+function optsSummary(o){const p=[];if(o.back==='button')p.push('Button tufted');if(o.back==='channel')p.push('Channel back');if(o.layout)p.push(layoutSummary(o.layout));if(o.notes)p.push(o.notes);return p.join(' · ')}
+const NS='http://www.w3.org/2000/svg';
+function el(t,a,txt){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e}
+function drawPlan(){
+  const L=state.showing?state.showing.layout:currentLayout();
+  const box=$('#planBox');box.hidden=!L;if(!L)return;
+  $('#planTitle').textContent=layoutSummary(L);
+  const svg=$('#planSvg');svg.innerHTML='';
+  const D=38,A=6,B=L.back,Ll=L.left?Math.max(L.left.len,D):0,Rl=L.right?Math.max(L.right.len,D):0;
+  const H=Math.max(D,Ll,Rl),pad=46,s=Math.min(520/B,200/H);
+  const X=v=>pad+v*s,Y=v=>28+v*s;
+  svg.setAttribute('viewBox',`0 0 ${X(B)+pad} ${Y(H)+34}`);
+  const pts=[[0,0],[B,0]];
+  if(Rl>D)pts.push([B,Rl],[B-D,Rl],[B-D,D]);else pts.push([B,D]);
+  if(Ll>D)pts.push([D,D],[D,Ll],[0,Ll]);else pts.push([0,D]);
+  svg.appendChild(el('polygon',{class:'body',points:pts.map(p=>X(p[0])+','+Y(p[1])).join(' ')}));
+  // arms
+  if(!L.left)svg.appendChild(el('rect',{class:'arm',x:X(0),y:Y(0),width:A*s,height:D*s}));
+  if(!L.right)svg.appendChild(el('rect',{class:'arm',x:X(B-A),y:Y(0),width:A*s,height:D*s}));
+  if(L.left&&L.left.end==='arm')svg.appendChild(el('rect',{class:'arm',x:X(0),y:Y(Ll-A),width:D*s,height:A*s}));
+  if(L.right&&L.right.end==='arm')svg.appendChild(el('rect',{class:'arm',x:X(B-D),y:Y(Rl-A),width:D*s,height:A*s}));
+  if(L.left&&L.left.end==='chaise')svg.appendChild(el('text',{x:X(D/2),y:Y(Ll)-8,'text-anchor':'middle',class:'small'},'Chaise'));
+  if(L.right&&L.right.end==='chaise')svg.appendChild(el('text',{x:X(B-D/2),y:Y(Rl)-8,'text-anchor':'middle',class:'small'},'Chaise'));
+  // dimensions
+  svg.appendChild(el('line',{class:'dim',x1:X(0),y1:Y(0)-12,x2:X(B),y2:Y(0)-12}));
+  svg.appendChild(el('text',{x:X(B/2),y:Y(0)-17,'text-anchor':'middle'},fmt(B)));
+  if(L.left){svg.appendChild(el('line',{class:'dim',x1:X(0)-12,y1:Y(0),x2:X(0)-12,y2:Y(Ll)}));
+    svg.appendChild(el('text',{x:X(0)-17,y:Y(Ll/2),'text-anchor':'middle',transform:`rotate(-90 ${X(0)-17} ${Y(Ll/2)})`},fmt(L.left.len)))}
+  if(L.right){svg.appendChild(el('line',{class:'dim',x1:X(B)+12,y1:Y(0),x2:X(B)+12,y2:Y(Rl)}));
+    svg.appendChild(el('text',{x:X(B)+17,y:Y(Rl/2),'text-anchor':'middle',transform:`rotate(90 ${X(B)+17} ${Y(Rl/2)})`},fmt(L.right.len)))}
+  svg.appendChild(el('text',{x:X(B/2),y:Y(H)+24,'text-anchor':'middle',class:'small'},'Front · depth shown at about 38″'));
+}
 const viewId=()=>state.style.views?state.style.views[state.view].id:state.style.id;
 function store(k,v){try{if(v===undefined)return localStorage.getItem(k)||'';localStorage.setItem(k,v)}catch(e){if(v===undefined)return window['_'+k]||'';window['_'+k]=v}}
 
@@ -227,7 +356,7 @@ function buildStyles(){
     const img=document.createElement('img');img.src=`ref/${s.views?s.views[0].id:s.id}.jpg`;img.alt='';
     const d=document.createElement('div');const t=document.createElement('b');t.textContent=s.name;const k=document.createElement('span');k.textContent=s.kind;d.append(t,k);
     b.append(img,d);
-    b.onclick=()=>{state.style=s;state.view=0;state.showing=null;list.querySelectorAll('.style-btn').forEach(e=>e.setAttribute('aria-pressed',e===b));showErr('');render()};
+    b.onclick=()=>{state.style=s;state.view=0;state.showing=null;opt.back='shown';opt.shape='shown';list.querySelectorAll('.style-btn').forEach(e=>e.setAttribute('aria-pressed',e===b));showErr('');render()};
     list.appendChild(b)});
 }
 function drawViews(){
@@ -236,21 +365,21 @@ function drawViews(){
     b.onclick=()=>{state.view=i;state.showing=null;render()};box.appendChild(b)});
 }
 function render(){
-  drawViews();
+  drawViews();drawOptions();
   const h=state.showing;
   $('#title').textContent=h?h.style:state.style.name;
-  if(h){$('#view').src=h.url;$('#tag').textContent='Generated';$('#tag').className='tag gen';$('#subtitle').textContent=h.fabric}
+  if(h){$('#view').src=h.url;$('#tag').textContent='Generated';$('#tag').className='tag gen';$('#subtitle').textContent=h.fabric+(h.summary?' · '+h.summary:'')}
   else{$('#view').src=`ref/${viewId()}.jpg`;$('#tag').textContent='Style photo';$('#tag').className='tag';$('#subtitle').textContent=state.style.kind}
   $('#genBtn').disabled=state.busy||!state.fabric;
   $('#genBtn').textContent=state.busy?'Generating…':'Generate';
   $('#step2').classList.toggle('done',!!state.fabric);
   $('#step3').classList.toggle('done',state.history.length>0);
-  drawHistory();
+  drawHistory();drawPlan();
 }
 function drawHistory(){
   const box=$('#history');box.innerHTML='';$('#historyWrap').hidden=!state.history.length;
   state.history.forEach(h=>{const b=document.createElement('button');b.setAttribute('aria-pressed',state.showing===h);
-    const i=document.createElement('img');i.src=h.url;i.alt='';const s=document.createElement('span');s.textContent=h.style+' · '+h.fabric;b.append(i,s);
+    const i=document.createElement('img');i.src=h.url;i.alt='';const s=document.createElement('span');s.textContent=h.style+' · '+h.fabric+(h.summary?' · '+h.summary:'');b.append(i,s);
     b.onclick=()=>{state.showing=h;render()};box.appendChild(b)});
 }
 function showErr(m){const e=$('#err');e.textContent=m||'';e.hidden=!m}
@@ -284,9 +413,9 @@ $('#setOk').onclick=()=>{store('openaiKey',$('#keyIn').value.trim());store('qual
   $('#setSheet').hidden=true;const f=afterSave;afterSave=null;if(f&&store('openaiKey'))f()};
 
 function canvasBlob(c,q){return new Promise(r=>c.toBlob(r,'image/jpeg',q))}
-async function callOpenAI(sofa,fabric,styleName,withFidelity){
+async function callOpenAI(sofa,fabric,styleName,withFidelity,o){
   const f=new FormData();
-  f.append('model',store('model')||'gpt-image-2');f.append('prompt',PROMPT(styleName));
+  f.append('model',store('model')||'gpt-image-2');f.append('prompt',PROMPT(styleName,o));
   f.append('image[]',sofa,'sofa.jpg');f.append('image[]',fabric,'fabric.jpg');
   f.append('size','1536x1024');f.append('quality',store('quality')||'high');
   f.append('output_format','jpeg');f.append('output_compression','90');f.append('n','1');
@@ -303,16 +432,16 @@ function friendly(status,msg){
 async function generate(){
   if(!state.fabric||state.busy)return;
   if(!store('openaiKey')){openSettings(generate);return}
-  const style=state.style,vid=viewId(),fab=state.fabric;
+  const style=state.style,vid=viewId(),fab=state.fabric,o=currentOpts();
   state.busy=true;showErr('');$('#busy').hidden=false;render();
   try{
     const sofa=await (await fetch(`ref/${vid}.jpg`)).blob();
     const fabric=await canvasBlob(fab.canvas,.92);
-    let {r,j}=await callOpenAI(sofa,fabric,style.name,true);
-    if(!r.ok&&r.status===400&&/input_fidelity/i.test(JSON.stringify(j)))({r,j}=await callOpenAI(sofa,fabric,style.name,false));
+    let {r,j}=await callOpenAI(sofa,fabric,style.name,true,o);
+    if(!r.ok&&r.status===400&&/input_fidelity/i.test(JSON.stringify(j)))({r,j}=await callOpenAI(sofa,fabric,style.name,false,o));
     if(!r.ok)throw new Error(friendly(r.status,j?.error?.message||''));
     const b64=j?.data?.[0]?.b64_json;if(!b64)throw new Error("OpenAI didn't send an image back. Try again.");
-    const h={url:'data:image/jpeg;base64,'+b64,style:style.name,fabric:fab.name};
+    const h={url:'data:image/jpeg;base64,'+b64,style:style.name,fabric:fab.name,summary:optsSummary(o),layout:o.layout};
     state.history.unshift(h);if(state.history.length>12)state.history.pop();
     if(state.style===style&&viewId()===vid)state.showing=h;
   }catch(e){showErr(e instanceof TypeError?"Couldn't reach OpenAI. Check the iPad's Wi-Fi and try again.":(e.message||String(e)))}
