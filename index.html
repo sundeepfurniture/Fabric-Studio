@@ -5,177 +5,190 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Sundeep Fabric Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
 <style>
-/* Layout: showroom tablet — 1 style rail · stage · 2 fabric + 3 generate; stacks on narrow screens */
+/* Layout: showroom tablet — catalogue grid · large stage + filmstrip · one configuration panel. Dark theme only; sofa photos sit on white display tiles. */
 :root{
-  --bg:#f3f4f1; --surface:#ffffff; --ink:#1d2321; --muted:#66706c; --line:#dfe3df;
-  --accent:#1f5148; --accent-ink:#ffffff; --accent-soft:#e2ece8; --stage:#ffffff; --err:#a3341f;
-  --display:"Young Serif", Georgia, serif;
-  --body:"Figtree", system-ui, -apple-system, sans-serif;
-  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --bg:#0e0f11; --surface:#18191c; --raised:#222327; --ink:#f3f3f1; --muted:#9c9da3; --line:#2c2d32;
+  --navy:#fd950d; --navy-ink:#1b1206; --navy-soft:rgba(253,149,13,.14); --sun:#fd950d; --sun-soft:rgba(253,149,13,.16); --err:#ff8a70;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  --font:"Manrope", system-ui, -apple-system, sans-serif;
+  color-scheme:dark;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#151917; --surface:#1d2321; --ink:#eef1ee; --muted:#9aa49f; --line:#2f3733;
-  --accent:#7fc0ae; --accent-ink:#0f1a17; --accent-soft:#24342f; --err:#f08a72; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#151917; --surface:#1d2321; --ink:#eef1ee; --muted:#9aa49f; --line:#2f3733;
-  --accent:#7fc0ae; --accent-ink:#0f1a17; --accent-soft:#24342f; --err:#f08a72; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{margin:0;min-height:100%}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;-webkit-tap-highlight-color:transparent;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;-webkit-tap-highlight-color:transparent;padding-bottom:env(safe-area-inset-bottom,0px)}
 button,select,input{font:inherit;color:inherit}
 button{cursor:pointer}
-button:focus-visible,input:focus-visible,select:focus-visible,label:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.app{display:grid;grid-template-columns:210px minmax(0,1fr) 300px;grid-template-areas:"head head head" "styles stage side";gap:18px;padding-block:18px;padding-inline:18px;max-width:1500px;margin:0 auto}
-header{grid-area:head;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.brand{font-family:var(--display);font-size:1.55rem}
-.brand small{display:block;font-family:var(--body);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:2px}
-.settings-btn{background:none;border:1px solid var(--line);padding:7px 12px;border-radius:999px;font-size:.82rem;color:var(--muted)}
-.step{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 10px;display:flex;gap:8px;align-items:center}
-.step i{font-style:normal;font-family:var(--mono);width:20px;height:20px;border-radius:50%;display:inline-grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:.7rem;letter-spacing:0}
-.step.done i{background:var(--accent);color:var(--accent-ink)}
-.styles{grid-area:styles;min-width:0}
-.style-list{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 130px);overflow:auto;padding-right:4px}
-.style-btn{display:grid;grid-template-columns:68px 1fr;align-items:center;gap:10px;padding:6px;border:1px solid transparent;border-radius:10px;background:none;text-align:left}
-.style-btn img{width:68px;height:48px;object-fit:contain;background:#fff;border-radius:6px}
-.style-btn b{display:block;font-weight:600;font-size:.9rem}
-.style-btn span{font-size:.75rem;color:var(--muted)}
-.style-btn[aria-pressed="true"]{background:var(--surface);border-color:var(--line)}
-.style-btn[aria-pressed="true"] b{color:var(--accent)}
-.stage{grid-area:stage;min-width:0;display:flex;flex-direction:column;gap:12px}
-.caption{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
-.caption h1{font-family:var(--display);font-weight:400;font-size:1.75rem;margin:0;text-wrap:balance}
-.caption p{margin:2px 0 0;color:var(--muted)}
-.views{display:flex;gap:6px}
-.chip{border:1px solid var(--line);background:var(--surface);padding:7px 14px;border-radius:999px;font-weight:500;font-size:.85rem}
-.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.frame{position:relative;background:var(--stage);border-radius:16px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;aspect-ratio:3/2;max-width:100%;overflow:hidden}
+button:focus-visible,input:focus-visible,select:focus-visible,label:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+/* top bar */
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.topbar-in{max-width:1500px;margin:0 auto;padding:8px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:16px}
+.logo-tile{background:#fff;border-radius:14px;padding:6px 10px;display:flex}
+.logo{height:56px;width:auto;display:block}
+.brand-name{font-weight:800;font-size:1.35rem;letter-spacing:-.01em}
+.brand-name small{display:block;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sun);margin-top:2px}
+.icon-btn{display:inline-flex;align-items:center;gap:8px;background:var(--raised);border:1px solid var(--line);padding:9px 14px;border-radius:999px;font-size:.85rem;font-weight:600;color:var(--ink)}
+.icon-btn svg{width:16px;height:16px}
+/* grid */
+.app{display:grid;grid-template-columns:270px minmax(0,1fr) 320px;grid-template-areas:"styles stage side";gap:20px;padding-block:20px;padding-inline:20px;max-width:1500px;margin:0 auto;align-items:start}
+.panel{background:var(--surface);border-radius:20px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.step{font-size:.8rem;font-weight:700;margin:0;display:flex;gap:10px;align-items:center;color:var(--ink)}
+.step i{font-style:normal;width:24px;height:24px;border-radius:50%;display:inline-grid;place-items:center;background:var(--navy-soft);color:var(--navy);font-size:.75rem;font-weight:800}
+.step.done i{background:var(--sun);color:#1b1206}
+/* styles */
+.styles{grid-area:styles;min-width:0;padding:16px;display:flex;flex-direction:column;gap:12px;position:sticky;top:12px}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{border:0;background:var(--raised);padding:6px 12px;border-radius:999px;font-size:.8rem;font-weight:600;color:var(--muted)}
+.filters button[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink)}
+.style-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-height:calc(100vh - 210px);overflow:auto;padding:2px}
+.style-btn{display:flex;flex-direction:column;gap:6px;padding:6px 6px 10px;border:1.5px solid transparent;border-radius:14px;background:var(--raised);text-align:left;min-width:0}
+.style-btn img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#fff;border-radius:10px;display:block}
+.style-btn b{display:block;font-weight:700;font-size:.85rem;padding:0 4px}
+.style-btn span{display:block;font-size:.7rem;color:var(--muted);padding:0 4px;line-height:1.25}
+.style-btn[aria-pressed="true"]{border-color:var(--navy);background:var(--navy-soft)}
+/* stage */
+.stage{grid-area:stage;min-width:0;display:flex;flex-direction:column;gap:14px}
+.stage-card{padding:20px;display:flex;flex-direction:column;gap:14px}
+.caption{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.caption h1{font-weight:800;font-size:1.7rem;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.caption p{margin:2px 0 0;color:var(--muted);font-weight:500}
+.views{display:flex;gap:6px;background:var(--raised);padding:4px;border-radius:999px}
+.views .chip{border:0;background:none}
+.views .chip[aria-pressed="true"]{background:var(--sun);color:#1b1206}
+.chip{border:1px solid var(--line);background:var(--raised);padding:7px 14px;border-radius:999px;font-weight:600;font-size:.82rem;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink);border-color:var(--navy)}
+.frame{position:relative;background:#fff;border-radius:16px;display:flex;align-items:center;justify-content:center;aspect-ratio:3/2;max-width:100%;overflow:hidden}
 .frame img{width:100%;height:100%;object-fit:contain;display:block}
-.tag{position:absolute;left:14px;top:14px;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;padding:5px 9px;border-radius:4px;background:rgba(255,255,255,.92);color:#1d2321;border:1px solid #dfe3df}
-.tag.gen{background:#1f5148;color:#fff;border-color:#1f5148}
-.busy{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,.86);text-align:center;padding:16px;color:#1d2321}
-.busy b{font-weight:600;font-size:1.05rem}
-.busy span{color:#66706c;font-size:.9rem}
-.spin{width:38px;height:38px;border-radius:50%;border:3px solid #cfd8d4;border-top-color:#1f5148;animation:sp 1s linear infinite}
+.tag{position:absolute;left:12px;top:12px;font-size:.7rem;font-weight:700;padding:6px 10px;border-radius:999px;background:#f0f0ee;color:#5c5d63}
+.tag.gen{background:var(--sun);color:#1b1206}
+.busy{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,.9);text-align:center;padding:16px;color:#16171a}
+.busy b{font-weight:700;font-size:1.05rem}
+.busy span{color:#5c5d63;font-size:.9rem}
+.spin{width:40px;height:40px;border-radius:50%;border:3px solid #fde3c2;border-top-color:var(--sun);animation:sp 1s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
-.hint{font-size:.82rem;color:var(--muted);margin:0}
-.opt{display:flex;flex-direction:column;gap:8px}
-.opt+.opt{border-top:1px solid var(--line);padding-top:12px}
-.opt-label{font-size:.8rem;font-weight:600;color:var(--ink)}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chips .chip{padding:6px 12px;font-size:.82rem}
-.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.grid2 .field{font-size:.75rem}
-.grid2 .field input,.grid2 .field select{padding:8px 10px;min-width:0;width:100%}
-.plan{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
-.plan-head{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
-.plan-head b{color:var(--ink);font-weight:600}
+.hint{font-size:.8rem;color:var(--muted);margin:0}
+.err{color:var(--err);font-size:.9rem;margin:0;font-weight:600}
+.plan{padding:14px 18px;display:flex;flex-direction:column;gap:6px}
+.plan-head{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.78rem;color:var(--muted)}
+.plan-head b{color:var(--ink);font-weight:700;font-size:.9rem}
 .plan svg{width:100%;height:auto;max-height:260px;display:block}
-.plan .body{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
-.plan .arm{fill:var(--accent)}
+.plan .body{fill:rgba(253,149,13,.12);stroke:var(--sun);stroke-width:1.5}
+.plan .arm{fill:var(--navy)}
 .plan .dim{stroke:var(--muted);stroke-width:1}
-.plan text{fill:var(--ink);font-family:var(--body);font-size:13px}
-.plan text.small{fill:var(--muted);font-size:11px}
-.err{color:var(--err);font-size:.9rem;margin:0}
-.side{grid-area:side;min-width:0;display:flex;flex-direction:column;gap:22px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
-.add{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1.5px dashed var(--line);border-radius:12px;padding:22px 12px;text-align:center;cursor:pointer;color:var(--muted)}
-.add b{color:var(--ink);font-weight:600}
-.fabric{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center}
-.fabric img{width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block}
-.fabric b{display:block;font-weight:600;overflow-wrap:anywhere;margin-bottom:4px}
-.link{background:none;border:0;padding:0;color:var(--accent);font-weight:600;font-size:.85rem;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-.gen-btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:12px;padding:16px;font-size:1.08rem;font-weight:600;width:100%}
-.gen-btn:disabled{opacity:.45;cursor:default}
-.history{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.history button{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:5px;text-align:left;min-width:0}
-.history button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
-.history img{width:100%;aspect-ratio:3/2;object-fit:contain;background:#fff;border-radius:6px;display:block}
-.history span{display:block;font-size:.72rem;line-height:1.25;margin-top:4px;color:var(--muted);overflow-wrap:anywhere}
-.sheet{position:fixed;inset:0;background:rgba(10,14,12,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
-.sheet-card{background:var(--surface);border-radius:16px;padding:18px;width:min(640px,100%);display:flex;flex-direction:column;gap:12px;max-height:100%;overflow:auto}
-.sheet-card h3{font-family:var(--display);font-weight:400;font-size:1.3rem;margin:0}
+.plan text{fill:var(--ink);font-family:var(--font);font-size:13px;font-weight:600}
+.plan text.small{fill:var(--muted);font-size:11px;font-weight:500}
+/* filmstrip */
+.strip{padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+.history{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.history button{flex:0 0 150px;background:var(--raised);border:1.5px solid transparent;border-radius:12px;padding:5px;text-align:left;min-width:0}
+.history button[aria-pressed="true"]{border-color:var(--sun);background:var(--sun-soft)}
+.history img{width:100%;aspect-ratio:3/2;object-fit:contain;background:#fff;border-radius:8px;display:block}
+.history span{display:block;font-size:.7rem;line-height:1.25;margin-top:5px;color:var(--muted);overflow-wrap:anywhere;font-weight:500}
+/* side panel */
+.side{grid-area:side;min-width:0;padding:18px;display:flex;flex-direction:column;gap:18px;position:sticky;top:12px}
+.side section{display:flex;flex-direction:column;gap:10px}
+.side section+section{border-top:1px solid var(--line);padding-top:18px}
+.add{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:1.5px dashed #45464d;background:var(--raised);border-radius:14px;padding:20px 12px;text-align:center;cursor:pointer;color:var(--muted);font-size:.82rem}
+.add b{color:var(--sun);font-weight:700;font-size:.95rem}
+.fabric{display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:center;background:var(--raised);border-radius:14px;padding:8px}
+.fabric img{width:72px;height:72px;object-fit:cover;border-radius:10px;display:block}
+.fabric b{display:block;font-weight:700;overflow-wrap:anywhere;margin-bottom:2px}
+.link{background:none;border:0;padding:0;color:var(--sun);font-weight:700;font-size:.82rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.opt{display:flex;flex-direction:column;gap:8px}
+.opt-label{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips .chip{padding:6px 12px;font-size:.8rem}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.grid2 .field{font-size:.72rem}
+.grid2 .field input,.grid2 .field select{padding:8px 10px;min-width:0;width:100%}
+.gen-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--navy);color:var(--navy-ink);border:0;border-radius:14px;padding:16px;font-size:1.05rem;font-weight:800;width:100%;letter-spacing:.01em}
+.gen-btn{box-shadow:0 8px 24px rgba(253,149,13,.25)}
+.gen-btn:disabled{opacity:.4;cursor:default}
+/* sheets & fields */
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+.sheet-card{background:var(--surface);border-radius:20px;padding:20px;width:min(640px,100%);display:flex;flex-direction:column;gap:12px;max-height:100%;overflow:auto}
+.sheet-card h3{font-weight:800;font-size:1.25rem;margin:0}
 .crop{position:relative;touch-action:none;user-select:none;align-self:center;max-width:100%}
 .crop img{display:block;max-width:100%;max-height:50vh}
 .crop .box{position:absolute;border:2px solid #fff;box-shadow:0 0 0 9999px rgba(0,0,0,.45);border-radius:4px;cursor:move}
-.field{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted)}
-.field input,.field select{padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
-.field input[type=range]{padding:0;accent-color:var(--accent)}
+.field{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted);font-weight:600}
+.field input,.field select{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--raised);color:var(--ink);font-weight:500}
+.field input[type=range]{padding:0;accent-color:var(--navy)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
-.primary{background:var(--accent);color:var(--accent-ink);border:0;padding:10px 18px;border-radius:999px;font-weight:600}
-.ghost{background:none;border:1px solid var(--line);padding:10px 18px;border-radius:999px}
-@media (max-width:1100px){
-  .app{grid-template-columns:minmax(0,1fr) 290px;grid-template-areas:"head head" "stage side" "styles styles"}
-  .style-list{flex-direction:row;max-height:none;overflow-x:auto;padding-bottom:6px}
-  .style-btn{grid-template-columns:1fr;min-width:128px;text-align:center}
-  .style-btn img{width:100%;height:70px}
+.primary{background:var(--navy);color:var(--navy-ink);border:0;padding:10px 18px;border-radius:999px;font-weight:700}
+.ghost{background:none;border:1px solid var(--line);padding:10px 18px;border-radius:999px;font-weight:600}
+@media (max-width:1180px){
+  .app{grid-template-columns:minmax(0,1fr) 300px;grid-template-areas:"stage side" "styles styles"}
+  .styles{position:static}
+  .style-list{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));max-height:none}
 }
 @media (max-width:760px){
-  .app{grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "styles" "stage" "side";padding-inline:16px}
+  .app{grid-template-columns:minmax(0,1fr);grid-template-areas:"stage" "side" "styles";padding-inline:16px}
+  .side{position:static}
 }
 </style>
 </head><body>
+<header class="topbar"><div class="topbar-in">
+  <div class="brand"><span class="logo-tile"><img class="logo" src="logo.png" alt="Sundeep Furniture Ltd. — Quality Custom Made Furniture Since 1993"></span>
+    <div class="brand-name">Fabric Studio<small>See your fabric on your sofa</small></div></div>
+  <button class="icon-btn" id="settingsBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</button>
+</div></header>
 <div class="app">
-  <header>
-    <div class="brand">Fabric Studio<small>Sundeep Furniture · Canadian custom made</small></div>
-    <button class="settings-btn" id="settingsBtn" type="button">Settings</button>
-  </header>
-
-  <section class="styles" aria-label="Sofa styles">
+  <section class="styles panel" aria-label="Sofa styles">
     <h2 class="step done"><i>1</i>Choose a style</h2>
+    <div class="filters" id="filters"></div>
     <div class="style-list" id="styleList"></div>
   </section>
 
   <section class="stage">
-    <div class="caption">
-      <div><h1 id="title">OW-333</h1><p id="subtitle">Sofa</p></div>
-      <div class="views" id="views" hidden></div>
+    <div class="panel stage-card">
+      <div class="caption">
+        <div><h1 id="title">OW-333</h1><p id="subtitle">Sofa</p></div>
+        <div class="views" id="views" hidden></div>
+      </div>
+      <div class="frame">
+        <img id="view" alt="Selected sofa">
+        <span class="tag" id="tag">Style photo</span>
+        <div class="busy" id="busy" hidden><div class="spin"></div><b>Generating your sofa…</b><span>This usually takes 20–60 seconds.</span></div>
+      </div>
+      <p class="err" id="err" hidden></p>
+      <p class="hint">Press and hold a generated photo to save it to Photos, then AirDrop, text or email it to the customer.</p>
     </div>
-    <div class="frame">
-      <img id="view" alt="Selected sofa">
-      <span class="tag" id="tag">Style photo</span>
-      <div class="busy" id="busy" hidden><div class="spin"></div><b>Generating your sofa…</b><span>This usually takes 20–60 seconds.</span></div>
-    </div>
-    <div class="plan" id="planBox" hidden>
+    <div class="panel plan" id="planBox" hidden>
       <div class="plan-head"><b id="planTitle">Layout</b><span>Seen from above · front of the sofa at the bottom</span></div>
       <svg id="planSvg" role="img" aria-label="Top-down layout with measurements"></svg>
     </div>
-    <p class="err" id="err" hidden></p>
-    <p class="hint">Press and hold a generated photo to save it to Photos, then AirDrop, text or email it to the customer.</p>
-  </section>
-
-  <aside class="side">
-    <div>
-      <h2 class="step" id="step2"><i>2</i>Add the fabric</h2>
-      <div class="card">
-        <label class="add" for="fileIn" id="addBox"><b>Add a fabric photo</b><span>Take a photo of the swatch laid flat, or pick one from Photos.</span></label>
-        <div class="fabric" id="fabricBox" hidden>
-          <img id="fabricImg" alt="Selected fabric">
-          <div><b id="fabricName">Fabric</b><label class="link" for="fileIn">Change fabric</label></div>
-        </div>
-        <input type="file" id="fileIn" accept="image/*" hidden>
-      </div>
-    </div>
-    <div id="optWrap">
-      <h2 class="step done"><i>3</i>Options</h2>
-      <div class="card">
-        <div class="opt" id="backOpt"><span class="opt-label">Back style</span><div class="chips" id="backChips"></div></div>
-        <div class="opt" id="sectOpt"><span class="opt-label">Sectional layout</span><div class="chips" id="shapeChips"></div><div id="sectFields"></div></div>
-        <div class="opt"><label class="field" for="notesIn" style="color:var(--ink);font-weight:600;font-size:.8rem">Notes (optional)
-          <input type="text" id="notesIn" autocomplete="off" placeholder="e.g. black legs, no nailheads" style="font-weight:400"></label></div>
-      </div>
-    </div>
-    <div>
-      <h2 class="step" id="step3"><i>4</i>Generate</h2>
-      <button class="gen-btn" id="genBtn" disabled>Generate</button>
-    </div>
-    <div id="historyWrap" hidden>
+    <div class="panel strip" id="historyWrap" hidden>
       <h2 class="step">Generated today</h2>
       <div class="history" id="history"></div>
     </div>
+  </section>
+
+  <aside class="side panel">
+    <section>
+      <h2 class="step" id="step2"><i>2</i>Add the fabric</h2>
+      <label class="add" for="fileIn" id="addBox"><b>Add a fabric photo</b><span>Take a photo of the swatch laid flat, or pick one from Photos.</span></label>
+      <div class="fabric" id="fabricBox" hidden>
+        <img id="fabricImg" alt="Selected fabric">
+        <div><b id="fabricName">Fabric</b><label class="link" for="fileIn">Change fabric</label></div>
+      </div>
+      <input type="file" id="fileIn" accept="image/*" hidden>
+    </section>
+    <section id="optWrap">
+      <h2 class="step done"><i>3</i>Options</h2>
+      <div class="opt" id="backOpt"><span class="opt-label">Back style</span><div class="chips" id="backChips"></div></div>
+      <div class="opt" id="sectOpt"><span class="opt-label">Sectional layout</span><div class="chips" id="shapeChips"></div><div id="sectFields"></div></div>
+      <div class="opt"><label class="field" for="notesIn"><span class="opt-label">Notes (optional)</span>
+        <input type="text" id="notesIn" autocomplete="off" placeholder="e.g. black legs, no nailheads"></label></div>
+    </section>
+    <section>
+      <h2 class="step" id="step3"><i>4</i>Generate</h2>
+      <button class="gen-btn" id="genBtn" disabled>Generate</button>
+    </section>
   </aside>
 </div>
 
@@ -350,9 +363,12 @@ function drawPlan(){
 const viewId=()=>state.style.views?state.style.views[state.view].id:state.style.id;
 function store(k,v){try{if(v===undefined)return localStorage.getItem(k)||'';localStorage.setItem(k,v)}catch(e){if(v===undefined)return window['_'+k]||'';window['_'+k]=v}}
 
+const CATS=[['all','All'],['sofa','Sofas'],['sectional','Sectionals']];let cat='all';
+function drawFilters(){const f=$('#filters');f.innerHTML='';CATS.forEach(([v,t])=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.setAttribute('aria-pressed',v===cat);
+  b.onclick=()=>{cat=v;drawFilters();document.querySelectorAll('.style-btn').forEach(e=>{e.hidden=!(cat==='all'||e.dataset.cat===cat)})};f.appendChild(b)})}
 function buildStyles(){
-  const list=$('#styleList');
-  STYLES.forEach(s=>{const b=document.createElement('button');b.className='style-btn';b.setAttribute('aria-pressed',s===state.style);
+  drawFilters();const list=$('#styleList');
+  STYLES.forEach(s=>{const b=document.createElement('button');b.className='style-btn';b.dataset.cat=s.sectional?'sectional':'sofa';b.setAttribute('aria-pressed',s===state.style);
     const img=document.createElement('img');img.src=`ref/${s.views?s.views[0].id:s.id}.jpg`;img.alt='';
     const d=document.createElement('div');const t=document.createElement('b');t.textContent=s.name;const k=document.createElement('span');k.textContent=s.kind;d.append(t,k);
     b.append(img,d);
